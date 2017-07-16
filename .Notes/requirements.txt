@@ -1,0 +1,18 @@
+~~~~~~~ This Project Will Use ~~~~~~~
+- SASS (scss)
+- Gulp
+- Versioning
+- JS/CSS minification
+- Rems
+- SVG
+- WordPress
+- Modular CSS
+- Bootstrap
+
+~~~~~~~ This Project Will Be ~~~~~~~
+- Easy for another dev to pick up
+- Easy to update
+- Clean
+- Secure
+- Printable
+- Responsive
