@@ -1,33 +1,26 @@
-"use strict";
-
 /* ---- ==== PLUGINS ==== ---- */
 
 // General
-const gulp = require("gulp");
-const browserSync = require('browser-sync');
-const connectHistoryAPIFallback = require('connect-history-api-fallback');
-const runSequence = require('run-sequence');
-const sourcemaps = require('gulp-sourcemaps');
-const gulpIf = require('gulp-if');
-const del = require("del");
-
-// Typescript
-const tsc = require("gulp-typescript");
-const tsProject = tsc.createProject("tsconfig.json");
-const tslint = require('gulp-tslint');
+var gulp = require('gulp');
+var browserSync = require('browser-sync');
+var runSequence = require('run-sequence');
+var sourcemaps = require('gulp-sourcemaps');
+var gulpIf = require('gulp-if');
+var del = require('del');
 
 // Styles
-const sass = require('gulp-sass');
-const autoprefixer = require('gulp-autoprefixer');
-const cssnano = require('gulp-cssnano');
+var sass = require('gulp-sass');
+var autoprefixer = require('gulp-autoprefixer');
+var cssnano = require('gulp-cssnano');
 
 // Images
-const imagemin = require('gulp-imagemin');
-const cache = require('gulp-cache');
+var imagemin = require('gulp-imagemin');
+var cache = require('gulp-cache');
 
 // JS
-const uglify = require('gulp-uglify');
-const useref = require('gulp-useref');
+var uglify = require('gulp-uglify');
+var useref = require('gulp-useref');
+
 
 
 /* ---- ==== LAB TASKS ==== ---- */
@@ -45,9 +38,6 @@ gulp.task('default', function (callback) {
 
 // Watch
 gulp.task('watch', ['browserSync:lab'], function () {
-
-	// Typescript
-	gulp.watch(["lab/**/*.ts"], ['compile']);
 
 	// Styles
 	gulp.watch('lab/**/*.scss', ['sass']);
@@ -69,50 +59,20 @@ gulp.task('browserSync:lab', function () {
 		port: 4,
 		server: {
 			baseDir: 'lab',
-			index: 'index.htm',
-			middleware: [
-				require('connect-history-api-fallback')({ index: '/index.htm' })
-			]
+			index: 'index.htm'
 		},
 		ui: false,
-		logLevel: "info",
+		logLevel: 'info',
 		logFileChanges: false
 	})
 })
 
 
-/* TypeScript */
-
-// Compiles Typescript.
-gulp.task('compile', ['tslint'], () => {
-	let tsResult = gulp.src('lab/**/*.ts')
-		.pipe(sourcemaps.init())
-		.pipe(tsc(tsProject));
-	return tsResult.js
-		.pipe(sourcemaps.write('.', { sourceRoot: '/lab' }))
-		.pipe(gulp.dest('lab'))
-		.pipe(browserSync.stream());
-});
-
-// Assesses (lints) on all custom TypeScript files.
-gulp.task('tslint', () => {
-	return gulp.src("lab/**/*.ts")
-		.pipe(tslint({
-			formatter: 'prose'
-		}))
-		.pipe(tslint.report());
-});
-
-// Removes compiled Typescript files.
-gulp.task('decompile', (cb) => {
-	return del(['lab/app/**/*.+(js|map)'], cb);
-});
-
 /* Styles */
 
 // Compiles SASS
 gulp.task('sass', function () {
-	return gulp.src('lab/assets/scss/skeefe.scss') // Retrieves skeefe.scss
+	return gulp.src('lab/assets/scss/sja.scss') // Retrieves sja.scss
 		.pipe(sourcemaps.init()) // Adds Sourcemaps	
 		.pipe(sass()) // Compiles SASS
 		.pipe(autoprefixer({
@@ -128,22 +88,13 @@ gulp.task('sass', function () {
 /* JS */
 
 // Copies all required libraries into build directory.
-gulp.task("vendor", () => {
+gulp.task('vendor', () => {
 	return gulp.src([
-		'core-js/client/shim.min.js',
-		'systemjs/dist/system-polyfills.js',
-		'systemjs/dist/system.src.js',
-		'reflect-metadata/Reflect.js',
-		'rxjs/**/*.js',
-		'zone.js/dist/**',
-		'@angular/**/bundles/**',
 		'flickity/dist/flickity.pkgd.min.js',
 		'flickity/dist/flickity.min.css'
-	], { cwd: "node_modules/**" })
-		.pipe(gulp.dest("lab/assets/vendor"));
+	], { cwd: 'node_modules/**' })
+		.pipe(gulp.dest('lab/assets/vendor'));
 });
-
-
 
 
 
@@ -158,11 +109,8 @@ gulp.task('build', function (callback) {
 		'markup', // Replaces Markup.
 		'useref', // Optimises and replaces CSS and vendor JS.
 		'vendor', // Optimises and replaces Vendor JS. NOTE: Slows the build process signifincantly.
-		'app', // Optimises and replaces app JS.
 		'images', // Optimises and replaces Images.
 		'fonts', // Replaces Fonts.
-		'data', // Replaces Data.
-		'config', // Replaces config files.
 
 		['browserSync:distillery'], // Launches BrowserSync.
 		callback
@@ -171,7 +119,7 @@ gulp.task('build', function (callback) {
 
 // Clean
 gulp.task('clean', (callback) => {
-	return del(["distillery"], callback)
+	return del(['distillery'], callback)
 });
 
 // Create Distillery Server
@@ -180,13 +128,10 @@ gulp.task('browserSync:distillery', function () {
 		port: 8,
 		server: {
 			baseDir: 'distillery',
-			index: 'index.htm',
-			middleware: [
-				require('connect-history-api-fallback')({ index: '/index.htm' })
-			]
+			index: 'index.htm'
 		},
 		ui: false,
-		logLevel: "info",
+		logLevel: 'info',
 		logFileChanges: false
 	})
 })
@@ -195,9 +140,9 @@ gulp.task('browserSync:distillery', function () {
 /* Markup */
 
 // Replaces markup.
-gulp.task("markup", () => {
-	return gulp.src(["lab/**/{.htm,html/**}"])
-		.pipe(gulp.dest("distillery"));
+gulp.task('markup', () => {
+	return gulp.src(['lab/**/{.htm,html/**}'])
+		.pipe(gulp.dest('distillery'));
 });
 
 
@@ -224,16 +169,6 @@ gulp.task('vendor', function () {
 });
 
 
-/* App JS */
-
-//Optimises and replaces App JS.
-gulp.task("app", () => {
-	return gulp.src('lab/app/**/*.js')
-		.pipe(uglify())
-		.pipe(gulp.dest("distillery/app"));
-});
-
-
 /* Images */
 
 // Optimises and replaces images.
@@ -253,22 +188,3 @@ gulp.task('fonts', function () {
 	return gulp.src('lab/assets/fonts/**/*')
 		.pipe(gulp.dest('distillery/assets/fonts'))
 })
-
-
-/* Data */
-
-//Replaces fonts.
-gulp.task('data', function () {
-	return gulp.src('lab/data/**/*.json')
-		.pipe(gulp.dest('distillery/data'))
-})
-
-
-/* Config */
-
-//Relaces config files.
-gulp.task("config", () => {
-	return gulp.src(["lab/*.+(js|config)"])
-		.pipe(gulpIf('*.js', uglify()))
-		.pipe(gulp.dest("distillery/"));
-});
